@@ -1,0 +1,24 @@
+### Chat GPT
+
+POST http://localhost:8080/api/generateBasic
+Content-Type: application/json
+
+{ "message": "Why is the sky blue?"}
+
+### Chat GPT with FAQ
+
+POST http://localhost:8080/api/generateFaq
+Content-Type: application/json
+
+{ "message": "Where was Brown Strauss founded?"}
+
+### Chat GPT with docs
+
+POST http://localhost:8080/api/generateDocs
+Content-Type: application/json
+
+{ "message": "Tell me about controlled rocking steel braced frames, please."}
+
+### Chroma API
+
+DELETE http://localhost:8000/api/v1/collections/SpringAiCollection

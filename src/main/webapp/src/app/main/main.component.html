@@ -1,0 +1,57 @@
+<mat-card class="card">
+  <mat-card-header>
+    <mat-card-title>Chat GPT</mat-card-title>
+    <mat-card-subtitle>&nbsp;</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <form [formGroup]="messageForm" (keyup.enter)="submitMessageBasic()" class="form">
+      <mat-form-field class="full-width">
+        <mat-label>Message</mat-label>
+        <input id="messageBasic" formControlName="message" matInput placeholder="Message...">
+      </mat-form-field>
+    </form>
+    <mat-divider></mat-divider>
+  </mat-card-content>
+  <mat-card-actions class="actions">
+    <button mat-raised-button type="submit" (click)="submitMessageBasic()" color="primary">Submit</button>
+  </mat-card-actions>
+  <mat-card-footer class="card-footer">{{responseBasic.response}}</mat-card-footer>
+</mat-card>
+<mat-card class="card">
+    <mat-card-header>
+        <mat-card-title>Chat GPT With FAQ</mat-card-title>
+        <mat-card-subtitle>&nbsp;</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+        <form [formGroup]="messageForm" (keyup.enter)="submitMessageFaq()" class="form">
+            <mat-form-field class="full-width">
+                <mat-label>Message</mat-label>
+                <input id="messageFaq" formControlName="message" matInput placeholder="Message...">
+            </mat-form-field>
+        </form>
+        <mat-divider></mat-divider>
+    </mat-card-content>
+    <mat-card-actions class="actions">
+        <button mat-raised-button type="submit" (click)="submitMessageFaq()" color="primary">Submit</button>
+    </mat-card-actions>
+    <mat-card-footer class="card-footer">{{responseFaq.response}}</mat-card-footer>
+</mat-card>
+<mat-card class="card">
+    <mat-card-header>
+        <mat-card-title>Chat GPT With Documents</mat-card-title>
+        <mat-card-subtitle><a href="https://scnz.org/techincal-resources/conference-papers/" target="_blank">Sources</a></mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+        <form [formGroup]="messageForm" (keyup.enter)="submitMessageFaq()" class="form">
+            <mat-form-field class="full-width">
+                <mat-label>Message</mat-label>
+                <input id="messageDocs" formControlName="message" matInput placeholder="Message...">
+            </mat-form-field>
+        </form>
+        <mat-divider></mat-divider>
+    </mat-card-content>
+    <mat-card-actions class="actions">
+        <button mat-raised-button type="submit" (click)="submitMessageFaq()" color="primary">Submit</button>
+    </mat-card-actions>
+    <mat-card-footer class="card-footer">{{responseDocs.response}}</mat-card-footer>
+</mat-card>

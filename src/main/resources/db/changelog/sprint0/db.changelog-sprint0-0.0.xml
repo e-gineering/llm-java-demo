@@ -1,0 +1,23 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:mongodb="http://www.liquibase.org/xml/ns/mongodb"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+         http://www.liquibase.org/xml/ns/mongodb
+         http://www.liquibase.org/xml/ns/mongodb/liquibase-mongodb-latest.xsd">
+    <changeSet id="sprint0-0.0.0" author="christian.desserich">
+        <mongodb:insertMany collectionName="faq">
+            <mongodb:documents>
+                [
+                    { question: "When was Brown Strauss founded?", answer: "1905" },
+                    { question: "Who founded Brown Strauss?", answer: "Brown Strauss was founded by Harry Strauss and two brothers, Morton and Isador Brown." },
+                    { question: "Where was Brown Strauss founded?", answer: "Kansas City, KS" },
+                    { question: "Where is Brown Strauss's headquarters?", answer: "Denver, CO" },
+                    { question: "How many locations does Brown Strauss have?", answer: "10" },
+                    { question: "Where are the Brown Strauss locations?", answer: "Denver, CO; Huston, TX; Phoenix, AZ; Kansas City, KS; Los Angeles, CA; Seattle, WA; Menomonie, WI; Salt Lake City, UT; Spokane, WA; Stockton, CA" },
+                ]
+            </mongodb:documents>
+        </mongodb:insertMany>
+    </changeSet>
+</databaseChangeLog>
