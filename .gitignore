@@ -3,6 +3,8 @@ HELP.md
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
+!**/src/main/webapp/**/node_modules
+!**/src/main/webapp/**/.angular
 !**/src/test/**/build/
 
 ### STS ###
