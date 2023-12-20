@@ -54,7 +54,8 @@ tasks.named('test') {
 
 tasks.register('cleanWebapp') {
 	delete file("${projectDir}/src/main/webapp/dist")
-	delete file("${projectDir}/src/main/resources/static").listFiles()
+	def staticResources = file("${projectDir}/src/main/resources/static")
+	if (staticResources.exists()) delete staticResources.listFiles()
 }
 
 clean.dependsOn cleanWebapp

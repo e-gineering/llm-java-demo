@@ -3,9 +3,14 @@ HELP.md
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
-!**/src/main/webapp/**/node_modules
-!**/src/main/webapp/**/.angular
 !**/src/test/**/build/
+
+### Webapp ###
+/src/main/webapp/node_modules
+/src/main/webapp/.angular/cache
+/src/main/webapp/.sass-cache/
+/src/main/webapp/coverage
+
 
 ### STS ###
 .apt_generated
@@ -37,3 +42,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### System files ###
+.DS_Store
+Thumbs.db
