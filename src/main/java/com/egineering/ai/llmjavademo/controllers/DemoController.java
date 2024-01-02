@@ -1,9 +1,7 @@
 package com.egineering.ai.llmjavademo.controllers;
 
-import com.egineering.ai.llmjavademo.dtos.LlmResponse;
 import com.egineering.ai.llmjavademo.dtos.MessageForm;
 import com.egineering.ai.llmjavademo.services.DemoService;
-import org.springframework.ai.client.AiClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,4 +38,8 @@ public class DemoController {
     public ResponseEntity<?> postGenerateDocs(@RequestBody MessageForm form) {
         return ResponseEntity.ok(service.generateDocs(form));
     }
-}
+
+    @PostMapping("/generateData")
+    public ResponseEntity<?> postGenerateData(@RequestBody MessageForm form) {
+        return ResponseEntity.ok(service.generateData(form));
+    }}

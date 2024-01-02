@@ -19,6 +19,13 @@ Content-Type: application/json
 
 { "message": "Tell me about controlled rocking steel braced frames, please."}
 
+### Chat GPT with data
+
+POST http://localhost:8080/api/generateData
+Content-Type: application/json
+
+{ "message": "Which wide flange beams weigh less than 40?"}
+
 ### Chroma API
 
 DELETE http://localhost:8000/api/v1/collections/SpringAiCollection

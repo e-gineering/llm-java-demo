@@ -30,6 +30,7 @@ export class MainComponent {
   responseBasic: { response: string } = {response: ''};
   responseFaq: { response: string } = {response: ''};
   responseDocs: { response: string } = {response: ''};
+  responseData: { response: string } = {response: ''};
 
   constructor(private apiService: ApiService) {}
 
@@ -59,4 +60,12 @@ export class MainComponent {
       }
     });
   }
-}
+
+  submitMessageData() {
+    this.apiService.postMessageData(this.messageForm).subscribe({
+      next: value => {
+        this.responseData = value;
+        this.messageForm.reset();
+      }
+    });
+  }}

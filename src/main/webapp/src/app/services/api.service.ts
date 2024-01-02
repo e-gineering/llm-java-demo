@@ -20,4 +20,7 @@ export class ApiService {
   postMessageDocs(messageForm: FormGroup) {
     return this.httpClient.post<{response: string}>("/api/generateDocs", messageForm.value, {headers: {"Content-Type": "application/json"}});
   }
-}
+
+  postMessageData(messageForm: FormGroup) {
+    return this.httpClient.post<{response: string}>("/api/generateData", messageForm.value, {headers: {"Content-Type": "application/json"}});
+  }}

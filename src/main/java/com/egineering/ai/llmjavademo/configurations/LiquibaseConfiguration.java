@@ -3,7 +3,7 @@ package com.egineering.ai.llmjavademo.configurations;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
 
-@ConfigurationProperties(prefix = "spring.liquibase")
+@ConfigurationProperties(prefix = "liquibase.mongodb")
 public record LiquibaseConfiguration(
         Boolean enabled,
         String changeLog,

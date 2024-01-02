@@ -39,10 +39,10 @@
 <mat-card class="card">
     <mat-card-header>
         <mat-card-title>Chat GPT With Documents</mat-card-title>
-        <mat-card-subtitle><a href="https://scnz.org/techincal-resources/conference-papers/" target="_blank">Sources</a></mat-card-subtitle>
+        <mat-card-subtitle><a href="https://scnz.org/techincal-resources/conference-papers/" target="_blank" style="color: white">Sources</a></mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-        <form [formGroup]="messageForm" (keyup.enter)="submitMessageFaq()" class="form">
+        <form [formGroup]="messageForm" (keyup.enter)="submitMessageDocs()" class="form">
             <mat-form-field class="full-width">
                 <mat-label>Message</mat-label>
                 <input id="messageDocs" formControlName="message" matInput placeholder="Message...">
@@ -51,7 +51,25 @@
         <mat-divider></mat-divider>
     </mat-card-content>
     <mat-card-actions class="actions">
-        <button mat-raised-button type="submit" (click)="submitMessageFaq()" color="primary">Submit</button>
+        <button mat-raised-button type="submit" (click)="submitMessageDocs()" color="primary">Submit</button>
     </mat-card-actions>
     <mat-card-footer class="card-footer">{{responseDocs.response}}</mat-card-footer>
+</mat-card>
+<mat-card class="card">
+    <mat-card-header>
+        <mat-card-title>Chat GPT With Data</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <form [formGroup]="messageForm" (keyup.enter)="submitMessageData()" class="form">
+            <mat-form-field class="full-width">
+                <mat-label>Message</mat-label>
+                <input id="messageData" formControlName="message" matInput placeholder="Message...">
+            </mat-form-field>
+        </form>
+        <mat-divider></mat-divider>
+    </mat-card-content>
+    <mat-card-actions class="actions">
+        <button mat-raised-button type="submit" (click)="submitMessageData()" color="primary">Submit</button>
+    </mat-card-actions>
+    <mat-card-footer class="card-footer">{{responseData.response}}</mat-card-footer>
 </mat-card>

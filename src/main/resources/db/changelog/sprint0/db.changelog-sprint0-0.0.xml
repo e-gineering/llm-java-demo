@@ -1,23 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:mongodb="http://www.liquibase.org/xml/ns/mongodb"
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
-         http://www.liquibase.org/xml/ns/mongodb
-         http://www.liquibase.org/xml/ns/mongodb/liquibase-mongodb-latest.xsd">
+xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
     <changeSet id="sprint0-0.0.0" author="christian.desserich">
-        <mongodb:insertMany collectionName="faq">
-            <mongodb:documents>
-                [
-                    { question: "When was Brown Strauss founded?", answer: "1905" },
-                    { question: "Who founded Brown Strauss?", answer: "Brown Strauss was founded by Harry Strauss and two brothers, Morton and Isador Brown." },
-                    { question: "Where was Brown Strauss founded?", answer: "Kansas City, KS" },
-                    { question: "Where is Brown Strauss's headquarters?", answer: "Denver, CO" },
-                    { question: "How many locations does Brown Strauss have?", answer: "10" },
-                    { question: "Where are the Brown Strauss locations?", answer: "Denver, CO; Huston, TX; Phoenix, AZ; Kansas City, KS; Los Angeles, CA; Seattle, WA; Menomonie, WI; Salt Lake City, UT; Spokane, WA; Stockton, CA" },
-                ]
-            </mongodb:documents>
-        </mongodb:insertMany>
+        <createTable tableName="wide_flange_beams">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="size" type="varchar"/>
+            <column name="weight_per_foot" type="numeric"/>
+            <column name="section_depth" type="numeric"/>
+            <column name="flange_width" type="numeric"/>
+            <column name="flange_thickness" type="numeric"/>
+            <column name="web_thickness" type="numeric"/>
+            <column name="weight_per_forty_feet" type="int"/>
+            <column name="weight_per_sixty_feet" type="int"/>
+        </createTable>
+        <loadData tableName="wide_flange_beams" file="db/changelog/sprint0/wide_flange_beams.csv">
+            <column name="size" header="size" />
+            <column name="weight_per_foot" header="weight_per_foot"/>
+            <column name="section_depth" header="section_depth"/>
+            <column name="flange_width" header="flange_width"/>
+            <column name="flange_thickness" header="flange_thickness"/>
+            <column name="web_thickness" header="web_thickness"/>
+            <column name="weight_per_forty_feet" header="weight_per_forty_feet"/>
+            <column name="weight_per_sixty_feet" header="weight_per_sixty_feet"/>
+        </loadData>
     </changeSet>
+
 </databaseChangeLog>
