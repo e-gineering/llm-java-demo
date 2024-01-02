@@ -7,7 +7,6 @@ import com.egineering.ai.llmjavademo.agents.FaqAgent;
 import com.egineering.ai.llmjavademo.agents.SqlAgent;
 import com.egineering.ai.llmjavademo.configurations.LiquibaseConfiguration;
 import com.egineering.ai.llmjavademo.models.chromadbapi.Collection;
-import com.egineering.ai.llmjavademo.repositories.WideFlangeBeamRepository;
 import com.egineering.ai.llmjavademo.services.SqlRetriever;
 import dev.langchain4j.data.document.DocumentSplitter;
 import dev.langchain4j.data.document.loader.FileSystemDocumentLoader;
@@ -160,8 +159,8 @@ public class LlmJavaDemoApplication {
     }
 
     @Bean
-    public SqlRetriever sqlRetriever(JdbcTemplate jdbcTemplate, WideFlangeBeamRepository repository, SqlAgent sqlAgent) {
-        return new SqlRetriever(jdbcTemplate, repository, sqlAgent);
+    public SqlRetriever sqlRetriever(JdbcTemplate jdbcTemplate, SqlAgent sqlAgent) {
+        return new SqlRetriever(jdbcTemplate, sqlAgent);
     }
 
     @Bean

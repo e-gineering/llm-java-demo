@@ -1,7 +1,6 @@
 package com.egineering.ai.llmjavademo.services;
 
 import com.egineering.ai.llmjavademo.agents.SqlAgent;
-import com.egineering.ai.llmjavademo.repositories.WideFlangeBeamRepository;
 import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.retriever.Retriever;
@@ -15,19 +14,14 @@ public class SqlRetriever implements Retriever<TextSegment> {
 
     private static final String DDL_SQL = """
             SELECT
-              'CREATE TABLE ' || relname || E'\\n(\\n' ||
-              array_to_string(
-                array_agg(
-                  '    ' || column_name || ' ' ||  type || ' '|| not_null
-                )
-                , E',\\n'
-              ) || E'\\n);\\n'
+              'CREATE TABLE ' || relname || ' (' ||
+              array_to_string(array_agg(column_name || ' ' ||  type || ' ' || not_null), ', ') || ');'
             from
             (
-              SELECT\s
+              SELECT
                 c.relname, a.attname AS column_name,
                 pg_catalog.format_type(a.atttypid, a.atttypmod) as type,
-                case\s
+                case
                   when a.attnotnull
                 then 'NOT NULL'
                 else 'NULL'
@@ -35,7 +29,7 @@ public class SqlRetriever implements Retriever<TextSegment> {
               FROM pg_class c,
                pg_attribute a,
                pg_type t
-               WHERE c.relname = 'wide_flange_beams'
+               WHERE c.relname in('wide_flange_beams', 'square_tubing')
                AND a.attnum > 0
                AND a.attrelid = c.oid
                AND a.atttypid = t.oid
@@ -45,19 +39,23 @@ public class SqlRetriever implements Retriever<TextSegment> {
             """;
 
     private final JdbcTemplate jdbcTemplate;
-    private final WideFlangeBeamRepository dataBase;
     private final SqlAgent sqlAgent;
 
-    public SqlRetriever(JdbcTemplate jdbcTemplate, WideFlangeBeamRepository dataBase, SqlAgent sqlAgent) {
+    public SqlRetriever(JdbcTemplate jdbcTemplate, SqlAgent sqlAgent) {
         this.jdbcTemplate = jdbcTemplate;
-        this.dataBase = dataBase;
         this.sqlAgent = sqlAgent;
     }
 
     @Override
     public List<TextSegment> findRelevant(String text) {
 
-        String tableDdl = jdbcTemplate.queryForObject(DDL_SQL, String.class);
+        List<Map<String, Object>> tableDdlResult = jdbcTemplate.queryForList(DDL_SQL);
+
+        String tableDdl = tableDdlResult.stream()
+                .map(m -> m.values().stream()
+                        .map(Object::toString)
+                        .collect(Collectors.joining()))
+                .collect(Collectors.joining("\n"));
 
         String sql = sqlAgent.generate(tableDdl, text);
 

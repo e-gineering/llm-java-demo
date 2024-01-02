@@ -28,4 +28,4 @@ Content-Type: application/json
 
 ### Chroma API
 
-DELETE http://localhost:8000/api/v1/collections/SpringAiCollection
+GET http://localhost:8000/api/v1/collections/documents

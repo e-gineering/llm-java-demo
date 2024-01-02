@@ -66,6 +66,9 @@ export class MainComponent {
       next: value => {
         this.responseData = value;
         this.messageForm.reset();
+      },
+      complete: ()=> {
+
       }
     });
   }}

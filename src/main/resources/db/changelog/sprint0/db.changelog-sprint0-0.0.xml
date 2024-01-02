@@ -29,6 +29,21 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
             <column name="weight_per_forty_feet" header="weight_per_forty_feet"/>
             <column name="weight_per_sixty_feet" header="weight_per_sixty_feet"/>
         </loadData>
+        <createTable tableName="square_tubing">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="size" type="varchar"/>
+            <column name="gauge" type="varchar"/>
+            <column name="thickness" type="numeric"/>
+            <column name="weight_per_foot" type="numeric"/>
+        </createTable>
+        <loadData tableName="square_tubing" file="db/changelog/sprint0/square_tubing.csv">
+            <column name="size" header="size" />
+            <column name="gauge" header="gauge"/>
+            <column name="thickness" header="thickness"/>
+            <column name="weight_per_foot" header="weight_per_foot"/>
+        </loadData>
     </changeSet>
 
 </databaseChangeLog>
