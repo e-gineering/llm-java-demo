@@ -5,8 +5,11 @@ import com.egineering.ai.llmjavademo.agents.DataAgent;
 import com.egineering.ai.llmjavademo.agents.DocsAgent;
 import com.egineering.ai.llmjavademo.agents.FaqAgent;
 import com.egineering.ai.llmjavademo.agents.SqlAgent;
+import com.egineering.ai.llmjavademo.agents.WsAgent;
 import com.egineering.ai.llmjavademo.configurations.LiquibaseConfiguration;
+import com.egineering.ai.llmjavademo.configurations.LlmConfiguration;
 import com.egineering.ai.llmjavademo.models.chromadbapi.Collection;
+import com.egineering.ai.llmjavademo.services.ChromaClient;
 import com.egineering.ai.llmjavademo.services.SqlRetriever;
 import dev.langchain4j.data.document.DocumentSplitter;
 import dev.langchain4j.data.document.loader.FileSystemDocumentLoader;
@@ -18,6 +21,7 @@ import dev.langchain4j.model.Tokenizer;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.embedding.AllMiniLmL6V2EmbeddingModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
+import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
 import dev.langchain4j.model.openai.OpenAiTokenizer;
 import dev.langchain4j.retriever.EmbeddingStoreRetriever;
 import dev.langchain4j.retriever.Retriever;
@@ -46,6 +50,8 @@ import org.springframework.web.client.RestTemplate;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 import static dev.langchain4j.model.openai.OpenAiModelName.GPT_3_5_TURBO;
 
@@ -59,11 +65,30 @@ public class LlmJavaDemoApplication {
     }
 
     @Bean
+    public ChromaClient chromaClient() {
+        return new ChromaClient("http://localhost:8000", Duration.of(5, ChronoUnit.SECONDS));
+    }
+
+    @Bean
+    public WsAgent wsAgent(LlmConfiguration configuration) {
+        return AiServices.builder(WsAgent.class)
+                .streamingChatLanguageModel(OpenAiStreamingChatModel.withApiKey(configuration.apiKey()))
+                .build();
+//        return OpenAiStreamingChatModel.withApiKey(configuration.key());
+    }
+
+    @Bean
+    public OpenAiStreamingChatModel streamingChatModel(LlmConfiguration configuration) {
+        return OpenAiStreamingChatModel.withApiKey(configuration.apiKey());
+    }
+
+    @Bean
     public BasicAgent basicAgent(ChatLanguageModel chatLanguageModel) {
         return AiServices.builder(BasicAgent.class)
                 .chatLanguageModel(chatLanguageModel)
                 .build();
     }
+
     @Bean
     public FaqAgent faqAgent(ChatLanguageModel chatLanguageModel) {
         return AiServices.builder(FaqAgent.class)
@@ -80,6 +105,7 @@ public class LlmJavaDemoApplication {
                 .retriever(retriever)
                 .build();
     }
+
     @Bean
     public SqlAgent sqlAgent(ChatLanguageModel chatLanguageModel) {
         return AiServices.builder(SqlAgent.class)
@@ -119,7 +145,6 @@ public class LlmJavaDemoApplication {
             String collectionCountStr = restTemplate.getForObject("/collections/" + collection.getId() + "/count", String.class);
 
             if (collectionCountStr != null && Integer.parseInt(collectionCountStr) <= 0) {
-
 
                 File fileResource = ResourceUtils.getFile("classpath:documents");
                 if (fileResource.exists() && fileResource.isDirectory()) {
