@@ -1,6 +1,7 @@
 package com.egineering.ai.llmjavademo.agents;
 
 import dev.langchain4j.service.SystemMessage;
+import dev.langchain4j.service.TokenStream;
 import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.V;
 
@@ -13,5 +14,5 @@ public interface FaqAgent {
             
             FAQs:
             {{faqs}}""")
-    String generate(@UserMessage String userMessage, @V("faqs") String faqs);
+    TokenStream generate(@UserMessage String userMessage, @V("faqs") String faqs);
 }

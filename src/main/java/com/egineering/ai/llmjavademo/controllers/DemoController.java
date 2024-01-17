@@ -11,8 +11,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,29 +45,27 @@ public class DemoController {
         }
     }
 
-    @PostMapping("/generateBasic")
-    public ResponseEntity<?> postGenerateBasic(@RequestBody MessageForm form) {
-        return ResponseEntity.ok(service.generateBasic(form));
+    @MessageMapping("/basic/llmStreamingRequest")
+    @SendTo("/topic/basic/llmResponse")
+    public StreamingLlmResponse receiveLlmStreamingRequestBasic(MessageForm form) {
+        return service.generateBasic(form);
     }
 
-    @PostMapping("/generateFaq")
-    public ResponseEntity<?> postGenerateFaq(@RequestBody MessageForm form) {
-        return ResponseEntity.ok(service.generateFaq(form));
+    @MessageMapping("/faq/llmStreamingRequest")
+    @SendTo("/topic/faq/llmResponse")
+    public StreamingLlmResponse receiveLlmStreamingRequestFaq(MessageForm form) {
+        return service.generateFaq(form);
     }
 
-    @PostMapping("/generateDocs")
-    public ResponseEntity<?> postGenerateDocs(@RequestBody MessageForm form) {
-        return ResponseEntity.ok(service.generateDocs(form));
-    }
-
-    @PostMapping("/generateData")
-    public ResponseEntity<?> postGenerateData(@RequestBody MessageForm form) {
-        return ResponseEntity.ok(service.generateData(form));
-    }
-
-    @MessageMapping("/llmStreamingRequest")
-    @SendTo("/topic/llmResponse")
-    public StreamingLlmResponse receiveLlmStreamingRequest(MessageForm form) {
+    @MessageMapping("/documents/llmStreamingRequest")
+    @SendTo("/topic/documents/llmResponse")
+    public StreamingLlmResponse receiveLlmStreamingRequestDocuments(MessageForm form) {
         return documentAgent.generate(form);
+    }
+
+    @MessageMapping("/data/llmStreamingRequest")
+    @SendTo("/topic/data/llmResponse")
+    public StreamingLlmResponse postGenerateData(MessageForm form) {
+        return service.generateData(form);
     }
 }

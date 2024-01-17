@@ -2,20 +2,21 @@ package com.egineering.ai.llmjavademo;
 
 import com.egineering.ai.llmjavademo.agents.BasicAgent;
 import com.egineering.ai.llmjavademo.agents.DataAgent;
-import com.egineering.ai.llmjavademo.agents.DocsAgent;
 import com.egineering.ai.llmjavademo.agents.FaqAgent;
 import com.egineering.ai.llmjavademo.agents.SqlAgent;
-import com.egineering.ai.llmjavademo.agents.WsAgent;
 import com.egineering.ai.llmjavademo.configurations.LiquibaseConfiguration;
 import com.egineering.ai.llmjavademo.configurations.LlmConfiguration;
 import com.egineering.ai.llmjavademo.models.chromadbapi.Collection;
+import com.egineering.ai.llmjavademo.serializers.ChatMessageSerializer;
 import com.egineering.ai.llmjavademo.services.ChromaClient;
 import com.egineering.ai.llmjavademo.services.SqlRetriever;
 import dev.langchain4j.data.document.DocumentSplitter;
 import dev.langchain4j.data.document.loader.FileSystemDocumentLoader;
 import dev.langchain4j.data.document.parser.apache.pdfbox.ApachePdfBoxDocumentParser;
 import dev.langchain4j.data.document.splitter.DocumentSplitters;
+import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.Tokenizer;
 import dev.langchain4j.model.chat.ChatLanguageModel;
@@ -39,6 +40,7 @@ import liquibase.ext.mongodb.database.MongoLiquibaseDatabase;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -65,16 +67,13 @@ public class LlmJavaDemoApplication {
     }
 
     @Bean
-    public ChromaClient chromaClient() {
-        return new ChromaClient("http://localhost:8000", Duration.of(5, ChronoUnit.SECONDS));
+    public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
+        return builder -> builder.serializerByType(ChatMessage.class, new ChatMessageSerializer());
     }
 
     @Bean
-    public WsAgent wsAgent(LlmConfiguration configuration) {
-        return AiServices.builder(WsAgent.class)
-                .streamingChatLanguageModel(OpenAiStreamingChatModel.withApiKey(configuration.apiKey()))
-                .build();
-//        return OpenAiStreamingChatModel.withApiKey(configuration.key());
+    public ChromaClient chromaClient() {
+        return new ChromaClient("http://localhost:8000", Duration.of(5, ChronoUnit.SECONDS));
     }
 
     @Bean
@@ -83,26 +82,28 @@ public class LlmJavaDemoApplication {
     }
 
     @Bean
-    public BasicAgent basicAgent(ChatLanguageModel chatLanguageModel) {
+    public ChatMemory basicChatMemory() {
+        return MessageWindowChatMemory.withMaxMessages(20);
+    }
+
+    @Bean
+    public BasicAgent basicAgent(OpenAiStreamingChatModel streamingChatModel, ChatMemory basicChatMemory) {
         return AiServices.builder(BasicAgent.class)
-                .chatLanguageModel(chatLanguageModel)
+                .streamingChatLanguageModel(streamingChatModel)
+                .chatMemory(basicChatMemory)
                 .build();
     }
 
     @Bean
-    public FaqAgent faqAgent(ChatLanguageModel chatLanguageModel) {
+    public ChatMemory faqChatMemory() {
+        return MessageWindowChatMemory.withMaxMessages(20);
+    }
+
+    @Bean
+    public FaqAgent faqAgent(OpenAiStreamingChatModel streamingChatModel, ChatMemory faqChatMemory) {
         return AiServices.builder(FaqAgent.class)
-                .chatLanguageModel(chatLanguageModel)
-                .chatMemory(MessageWindowChatMemory.withMaxMessages(20))
-                .build();
-    }
-
-    @Bean
-    public DocsAgent docsAgent(ChatLanguageModel chatLanguageModel, Retriever<TextSegment> retriever) {
-        return AiServices.builder(DocsAgent.class)
-                .chatLanguageModel(chatLanguageModel)
-                .chatMemory(MessageWindowChatMemory.withMaxMessages(20))
-                .retriever(retriever)
+                .streamingChatLanguageModel(streamingChatModel)
+                .chatMemory(faqChatMemory)
                 .build();
     }
 
@@ -114,10 +115,15 @@ public class LlmJavaDemoApplication {
     }
 
     @Bean
-    public DataAgent dataAgent(ChatLanguageModel chatLanguageModel, SqlRetriever sqlRetriever) {
+    public ChatMemory dataChatMemory() {
+        return MessageWindowChatMemory.withMaxMessages(20);
+    }
+
+    @Bean
+    public DataAgent dataAgent(OpenAiStreamingChatModel streamingChatModel, ChatMemory dataChatMemory, SqlRetriever sqlRetriever) {
         return AiServices.builder(DataAgent.class)
-                .chatLanguageModel(chatLanguageModel)
-                .chatMemory(MessageWindowChatMemory.withMaxMessages(20))
+                .streamingChatLanguageModel(streamingChatModel)
+                .chatMemory(dataChatMemory)
                 .retriever(sqlRetriever)
                 .build();
     }

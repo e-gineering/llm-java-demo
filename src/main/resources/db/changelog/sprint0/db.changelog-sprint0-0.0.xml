@@ -6,11 +6,12 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="sprint0-0.0.0" author="christian.desserich">
-        <createTable tableName="wide_flange_beams">
+        <createTable tableName="wide_flange_beam_type">
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="size" type="varchar"/>
+            <column name="size_width_in_inches" type="numeric"/>
+            <column name="size_height_in_inches" type="numeric"/>
             <column name="weight_per_foot" type="numeric"/>
             <column name="section_depth" type="numeric"/>
             <column name="flange_width" type="numeric"/>
@@ -19,8 +20,9 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
             <column name="weight_per_forty_feet" type="int"/>
             <column name="weight_per_sixty_feet" type="int"/>
         </createTable>
-        <loadData tableName="wide_flange_beams" file="db/changelog/sprint0/wide_flange_beams.csv">
-            <column name="size" header="size" />
+        <loadData tableName="wide_flange_beam_type" file="db/changelog/sprint0/wide_flange_beam_type.csv">
+            <column name="size_width_in_inches" header="size_width_in_inches" />
+            <column name="size_height_in_inches" header="size_height_in_inches" />
             <column name="weight_per_foot" header="weight_per_foot"/>
             <column name="section_depth" header="section_depth"/>
             <column name="flange_width" header="flange_width"/>
@@ -29,21 +31,62 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
             <column name="weight_per_forty_feet" header="weight_per_forty_feet"/>
             <column name="weight_per_sixty_feet" header="weight_per_sixty_feet"/>
         </loadData>
-        <createTable tableName="square_tubing">
+        <createTable tableName="wide_flange_beam">
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="size" type="varchar"/>
+            <column name="type" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="stock" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <loadData tableName="wide_flange_beam" file="db/changelog/sprint0/wide_flange_beam.csv">
+            <column name="type" header="type" />
+            <column name="stock" header="stock" />
+        </loadData>
+        <addForeignKeyConstraint baseTableName="wide_flange_beam"
+                                 baseColumnNames="type"
+                                 constraintName="fk_wide_flange_beam_wide_flange_beam_type"
+                                 referencedColumnNames="id"
+                                 referencedTableName="wide_flange_beam_type"/>
+
+        <createTable tableName="square_tubing_type">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="size_in_inches" type="numeric"/>
             <column name="gauge" type="varchar"/>
             <column name="thickness" type="numeric"/>
             <column name="weight_per_foot" type="numeric"/>
         </createTable>
-        <loadData tableName="square_tubing" file="db/changelog/sprint0/square_tubing.csv">
-            <column name="size" header="size" />
+        <loadData tableName="square_tubing_type" file="db/changelog/sprint0/square_tubing_type.csv">
+            <column name="size_in_inches" header="size_in_inches" />
             <column name="gauge" header="gauge"/>
             <column name="thickness" header="thickness"/>
             <column name="weight_per_foot" header="weight_per_foot"/>
         </loadData>
+        <createTable tableName="square_tubing">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="type" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="stock" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <loadData tableName="square_tubing" file="db/changelog/sprint0/square_tubing.csv">
+            <column name="type" header="type" />
+            <column name="stock" header="stock" />
+        </loadData>
+        <addForeignKeyConstraint baseTableName="square_tubing"
+                                 baseColumnNames="type"
+                                 constraintName="fk_square_tubing_square_tubing_type"
+                                 referencedColumnNames="id"
+                                 referencedTableName="square_tubing_type"/>
     </changeSet>
 
 </databaseChangeLog>

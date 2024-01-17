@@ -11,7 +11,6 @@ import com.egineering.ai.llmjavademo.services.ChromaClient;
 import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.message.AiMessage;
-import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.data.segment.TextSegment;
@@ -50,7 +49,7 @@ public class DocumentAgent {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
-    private final ChatMemory chatMemory = MessageWindowChatMemory.withMaxMessages(10);
+    private final ChatMemory chatMemory = MessageWindowChatMemory.withMaxMessages(20);
     private final StreamingChatLanguageModel streamingChatModel;
     private final ChromaClient chromaClient;
     private final String collectionId;
@@ -118,9 +117,7 @@ public class DocumentAgent {
                 .map(map -> map.get("file_name"))
                 .collect(Collectors.toSet());
 
-        return new StreamingLlmResponse(chatMemory.messages().stream()
-                .map(ChatMessage::toString)
-                .collect(Collectors.joining("<br/><br/>", "<p>", "</p>")), files);
+        return new StreamingLlmResponse(chatMemory.messages(), files);
     }
 
     private static List<EmbeddingMatch<TextSegment>> toEmbeddingMatches(QueryResponse queryResponse) {

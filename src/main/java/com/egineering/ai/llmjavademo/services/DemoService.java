@@ -2,84 +2,83 @@ package com.egineering.ai.llmjavademo.services;
 
 import com.egineering.ai.llmjavademo.agents.BasicAgent;
 import com.egineering.ai.llmjavademo.agents.DataAgent;
-import com.egineering.ai.llmjavademo.agents.DocsAgent;
 import com.egineering.ai.llmjavademo.agents.FaqAgent;
 import com.egineering.ai.llmjavademo.dtos.LlmResponse;
 import com.egineering.ai.llmjavademo.dtos.MessageForm;
+import com.egineering.ai.llmjavademo.dtos.StreamingLlmResponse;
 import com.egineering.ai.llmjavademo.models.Faq;
 import com.egineering.ai.llmjavademo.repositories.FaqRepository;
-import dev.langchain4j.model.StreamingResponseHandler;
-import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
-import org.springframework.beans.factory.annotation.Value;
+import dev.langchain4j.memory.ChatMemory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class DemoService {
 
-    @Value("classpath:/prompts/faqSystemMessage.st")
-    private String faqSystemMessage;
-
-    @Value("classpath:/prompts/docsSystemMessage.st")
-    private String docsSystemMessage;
-
     private final SimpMessagingTemplate messagingTemplate;
-    private final OpenAiStreamingChatModel streamingChatModel;
+    private final ChatMemory basicChatMemory;
     private final BasicAgent basicAgent;
+    private final ChatMemory faqChatMemory;
     private final FaqAgent faqAgent;
     private final FaqRepository faqRepository;
-    private final DocsAgent docsAgent;
+    private final ChatMemory dataChatMemory;
     private final DataAgent dataAgent;
 
-    public DemoService(SimpMessagingTemplate messagingTemplate, OpenAiStreamingChatModel streamingChatModel, BasicAgent basicAgent, FaqAgent faqAgent, FaqRepository faqRepository, DocsAgent docsAgent, DataAgent dataAgent) {
+    public DemoService(SimpMessagingTemplate messagingTemplate, ChatMemory basicChatMemory, BasicAgent basicAgent,
+                       ChatMemory faqChatMemory, FaqAgent faqAgent, FaqRepository faqRepository,
+                       ChatMemory dataChatMemory, DataAgent dataAgent) {
         this.messagingTemplate = messagingTemplate;
-        this.streamingChatModel = streamingChatModel;
+        this.basicChatMemory = basicChatMemory;
         this.basicAgent = basicAgent;
+        this.faqChatMemory = faqChatMemory;
         this.faqAgent = faqAgent;
         this.faqRepository = faqRepository;
-        this.docsAgent = docsAgent;
+        this.dataChatMemory = dataChatMemory;
         this.dataAgent = dataAgent;
     }
 
-    public LlmResponse generateWs(MessageForm form) {
-        streamingChatModel.generate(form.message(), new StreamingResponseHandler<>() {
-            @Override
-            public void onNext(String token) {
-                messagingTemplate.convertAndSend("/topic/test", new LlmResponse(token));
-            }
+    public StreamingLlmResponse generateBasic(MessageForm form) {
 
-            @Override
-            public void onError(Throwable error) {
-                error.printStackTrace();
-            }
-        });
-        return new LlmResponse("");
+        basicAgent.generate(form.message())
+                .onNext(token -> messagingTemplate.convertAndSend("/topic/basic/llmStreamingResponse", new LlmResponse(token)))
+                .onError(Throwable::printStackTrace)
+                .start();
+
+        return new StreamingLlmResponse(basicChatMemory.messages(), Collections.emptySet());
     }
 
-    public LlmResponse generateBasic(MessageForm form) {
-        return new LlmResponse(basicAgent.generate(form.message()));
-    }
-
-    public LlmResponse generateFaq(MessageForm form) {
+    public StreamingLlmResponse generateFaq(MessageForm form) {
 
         List<Faq> faqList = faqRepository.findAll();
+
+        Set<String> faqSet = faqList.stream()
+                .map(faq -> "Question: " + faq.question() + " | Answer: " + faq.answer())
+                .collect(Collectors.toSet());
+
         String faqs = faqList.stream()
                 .map(faq -> "Question: " + faq.question() + " | Answer: " + faq.answer())
                 .collect(Collectors.joining("\n"));
 
-        return new LlmResponse(faqAgent.generate(form.message(), faqs));
+        faqAgent.generate(form.message(), faqs)
+                .onNext(token -> messagingTemplate.convertAndSend("/topic/faq/llmStreamingResponse", new LlmResponse(token)))
+                .onError(Throwable::printStackTrace)
+                .start();
+
+        return new StreamingLlmResponse(faqChatMemory.messages(), faqSet);
     }
 
-    public LlmResponse generateDocs(MessageForm form) {
+    public StreamingLlmResponse generateData(MessageForm form) {
 
-        return new LlmResponse(docsAgent.generate(form.message()));
-    }
+        dataAgent.generate(form.message())
+                .onNext(token -> messagingTemplate.convertAndSend("/topic/data/llmStreamingResponse", new LlmResponse(token)))
+                .onError(Throwable::printStackTrace)
+                .start();
 
-    public LlmResponse generateData(MessageForm form) {
-
-        return new LlmResponse(dataAgent.generate(form.message()));
+        return new StreamingLlmResponse(dataChatMemory.messages(), Collections.emptySet());
     }
 }
