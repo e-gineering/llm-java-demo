@@ -1,6 +1,5 @@
 package com.egineering.ai.llmjavademo.agents;
 
-import com.egineering.ai.llmjavademo.configurations.LlmConfiguration;
 import com.egineering.ai.llmjavademo.dtos.LlmResponse;
 import com.egineering.ai.llmjavademo.dtos.MessageForm;
 import com.egineering.ai.llmjavademo.dtos.StreamingLlmResponse;
@@ -11,7 +10,7 @@ import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.StreamingResponseHandler;
 import dev.langchain4j.model.chat.StreamingChatLanguageModel;
-import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
+import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.model.output.Response;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -21,34 +20,41 @@ import org.springframework.util.StringUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 public abstract class AbstractStreamingAgent {
 
-    private final SimpMessagingTemplate messagingTemplate;
-    private final ChatMemory chatMemory = MessageWindowChatMemory.withMaxMessages(20);
-    private final StreamingChatLanguageModel streamingChatModel;
-    private final String systemMessage;
-    private final String outputTopic;
+    protected final SimpMessagingTemplate messagingTemplate;
+    protected final ChatMemory chatMemory = MessageWindowChatMemory.withMaxMessages(20);
+    protected final StreamingChatLanguageModel streamingChatModel;
+    protected String sytemMessageString;
+    protected final String outputTopic;
 
     @SneakyThrows
-    protected AbstractStreamingAgent(LlmConfiguration configuration, SimpMessagingTemplate messagingTemplate, String outputTopic, String systemMessageFile) {
+    protected AbstractStreamingAgent(StreamingChatLanguageModel streamingChatModel, SimpMessagingTemplate messagingTemplate, String outputTopic, String systemMessageFile) {
         this.messagingTemplate = messagingTemplate;
-        streamingChatModel = OpenAiStreamingChatModel.withApiKey(configuration.apiKey());
+        this.streamingChatModel = streamingChatModel;
         this.outputTopic = outputTopic;
-        systemMessage = new ClassPathResource(systemMessageFile).getContentAsString(StandardCharsets.UTF_8);
+        if (systemMessageFile != null) sytemMessageString = new ClassPathResource(systemMessageFile).getContentAsString(StandardCharsets.UTF_8);
     }
 
-    protected AbstractStreamingAgent(LlmConfiguration configuration, SimpMessagingTemplate messagingTemplate, String outputTopic) {
-        this(configuration, messagingTemplate, outputTopic, null);
+    protected AbstractStreamingAgent(StreamingChatLanguageModel streamingChatModel, SimpMessagingTemplate messagingTemplate, String outputTopic) {
+        this(streamingChatModel, messagingTemplate, outputTopic, null);
     }
 
     @SneakyThrows
-    public StreamingLlmResponse generate(MessageForm form) {
+    public StreamingLlmResponse generate(MessageForm form, List<String> documents, Set<String> files) {
 
-        if (StringUtils.hasLength(systemMessage)) {
-            chatMemory.add(SystemMessage.systemMessage(systemMessage));
+        if (StringUtils.hasLength(sytemMessageString)) {
+            SystemMessage systemMessage = PromptTemplate.from(sytemMessageString)
+                    .apply(Map.of("documents", String.join("/n", documents)))
+                    .toSystemMessage();
+
+            chatMemory.add(systemMessage);
         }
 
         chatMemory.add(UserMessage.from(form.message()));
@@ -76,6 +82,14 @@ public abstract class AbstractStreamingAgent {
 
         chatMemory.add(futureAiMessage.get());
 
-        return new StreamingLlmResponse(chatMemory.messages(), Collections.emptySet());
+        return new StreamingLlmResponse(chatMemory.messages(), documents, files);
+    }
+
+    public StreamingLlmResponse generate(MessageForm form, List<String> documents) {
+        return generate(form, documents, Collections.emptySet());
+    }
+
+    public StreamingLlmResponse generate(MessageForm form) {
+        return generate(form, Collections.emptyList(), Collections.emptySet());
     }
 }

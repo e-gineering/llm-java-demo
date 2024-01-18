@@ -21,7 +21,6 @@ import dev.langchain4j.model.chat.StreamingChatLanguageModel;
 import dev.langchain4j.model.embedding.AllMiniLmL6V2EmbeddingModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.input.PromptTemplate;
-import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
 import dev.langchain4j.model.output.Response;
 import dev.langchain4j.store.embedding.EmbeddingMatch;
 import lombok.SneakyThrows;
@@ -42,10 +41,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
-public class DocumentAgent {
+public class DocumentStreamingAgent {
 
-    @Value("classpath:prompts/docsSystemMessage.st")
-    private Resource docsSystemMessage;
+    @Value("classpath:prompts/documentsSystemMessage.st")
+    private Resource documentsSystemMessage;
 
     private final SimpMessagingTemplate messagingTemplate;
     private final EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
@@ -54,10 +53,10 @@ public class DocumentAgent {
     private final ChromaClient chromaClient;
     private final String collectionId;
 
-    public DocumentAgent(LlmConfiguration configuration, SimpMessagingTemplate messagingTemplate) {
+    public DocumentStreamingAgent(LlmConfiguration configuration, StreamingChatLanguageModel streamingChatModel, SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
-        streamingChatModel = OpenAiStreamingChatModel.withApiKey(configuration.apiKey());
-        this.chromaClient = new ChromaClient("http://localhost:8000", Duration.of(5, ChronoUnit.SECONDS));
+        this.streamingChatModel = streamingChatModel;
+        this.chromaClient = new ChromaClient("http://localhost:8000", Duration.of(10, ChronoUnit.SECONDS));
         Collection collection = chromaClient.collection("documents");
         this.collectionId = collection.getId();
     }
@@ -67,7 +66,7 @@ public class DocumentAgent {
 
         String prompt;
         try {
-            prompt = docsSystemMessage.getContentAsString(StandardCharsets.UTF_8);
+            prompt = documentsSystemMessage.getContentAsString(StandardCharsets.UTF_8);
         } catch (IOException ioe) {
             prompt = form.message();
         }
@@ -80,12 +79,14 @@ public class DocumentAgent {
 
         List<EmbeddingMatch<TextSegment>> matches = toEmbeddingMatches(queryResponse);
 
-        String documents = matches.stream()
+        List<String> documents = matches.stream()
                 .map(textSegmentEmbeddingMatch -> textSegmentEmbeddingMatch.embedded().text())
-                .collect(Collectors.joining("\n"));
+                .toList();
+
+        String documentString = String.join("\n", documents);
 
         SystemMessage systemMessage = PromptTemplate.from(prompt)
-                .apply(Map.of("documents", documents))
+                .apply(Map.of("documents", documentString))
                 .toSystemMessage();
 
         chatMemory.add(systemMessage);
@@ -117,7 +118,7 @@ public class DocumentAgent {
                 .map(map -> map.get("file_name"))
                 .collect(Collectors.toSet());
 
-        return new StreamingLlmResponse(chatMemory.messages(), files);
+        return new StreamingLlmResponse(chatMemory.messages(), documents, files);
     }
 
     private static List<EmbeddingMatch<TextSegment>> toEmbeddingMatches(QueryResponse queryResponse) {

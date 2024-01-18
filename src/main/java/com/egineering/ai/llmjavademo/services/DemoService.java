@@ -1,12 +1,12 @@
 package com.egineering.ai.llmjavademo.services;
 
-import com.egineering.ai.llmjavademo.agents.BasicAgent;
+import com.egineering.ai.llmjavademo.agents.BasicStreamingAgent;
 import com.egineering.ai.llmjavademo.agents.DataAgent;
-import com.egineering.ai.llmjavademo.agents.FaqAgent;
+import com.egineering.ai.llmjavademo.agents.DocumentStreamingAgent;
+import com.egineering.ai.llmjavademo.agents.FaqStreamingAgent;
 import com.egineering.ai.llmjavademo.dtos.LlmResponse;
 import com.egineering.ai.llmjavademo.dtos.MessageForm;
 import com.egineering.ai.llmjavademo.dtos.StreamingLlmResponse;
-import com.egineering.ai.llmjavademo.models.Faq;
 import com.egineering.ai.llmjavademo.repositories.FaqRepository;
 import dev.langchain4j.memory.ChatMemory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -14,62 +14,45 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class DemoService {
 
     private final SimpMessagingTemplate messagingTemplate;
-    private final ChatMemory basicChatMemory;
-    private final BasicAgent basicAgent;
-    private final ChatMemory faqChatMemory;
-    private final FaqAgent faqAgent;
+    private final BasicStreamingAgent basicStreamingAgent;
+    private final FaqStreamingAgent faqStreamingAgent;
     private final FaqRepository faqRepository;
+    private final DocumentStreamingAgent documentStreamingAgent;
     private final ChatMemory dataChatMemory;
     private final DataAgent dataAgent;
 
-    public DemoService(SimpMessagingTemplate messagingTemplate, ChatMemory basicChatMemory, BasicAgent basicAgent,
-                       ChatMemory faqChatMemory, FaqAgent faqAgent, FaqRepository faqRepository,
-                       ChatMemory dataChatMemory, DataAgent dataAgent) {
+    public DemoService(SimpMessagingTemplate messagingTemplate, BasicStreamingAgent basicStreamingAgent,
+                       FaqStreamingAgent faqStreamingAgent, FaqRepository faqRepository,
+                       DocumentStreamingAgent documentStreamingAgent, ChatMemory dataChatMemory, DataAgent dataAgent) {
         this.messagingTemplate = messagingTemplate;
-        this.basicChatMemory = basicChatMemory;
-        this.basicAgent = basicAgent;
-        this.faqChatMemory = faqChatMemory;
-        this.faqAgent = faqAgent;
+        this.basicStreamingAgent = basicStreamingAgent;
+        this.faqStreamingAgent = faqStreamingAgent;
         this.faqRepository = faqRepository;
+        this.documentStreamingAgent = documentStreamingAgent;
         this.dataChatMemory = dataChatMemory;
         this.dataAgent = dataAgent;
     }
 
     public StreamingLlmResponse generateBasic(MessageForm form) {
-
-        basicAgent.generate(form.message())
-                .onNext(token -> messagingTemplate.convertAndSend("/topic/basic/llmStreamingResponse", new LlmResponse(token)))
-                .onError(Throwable::printStackTrace)
-                .start();
-
-        return new StreamingLlmResponse(basicChatMemory.messages(), Collections.emptySet());
+        return basicStreamingAgent.generate(form);
     }
 
     public StreamingLlmResponse generateFaq(MessageForm form) {
 
-        List<Faq> faqList = faqRepository.findAll();
-
-        Set<String> faqSet = faqList.stream()
+        List<String> documents = faqRepository.findAll().stream()
                 .map(faq -> "Question: " + faq.question() + " | Answer: " + faq.answer())
-                .collect(Collectors.toSet());
+                .toList();
 
-        String faqs = faqList.stream()
-                .map(faq -> "Question: " + faq.question() + " | Answer: " + faq.answer())
-                .collect(Collectors.joining("\n"));
+        return faqStreamingAgent.generate(form, documents);
+    }
 
-        faqAgent.generate(form.message(), faqs)
-                .onNext(token -> messagingTemplate.convertAndSend("/topic/faq/llmStreamingResponse", new LlmResponse(token)))
-                .onError(Throwable::printStackTrace)
-                .start();
-
-        return new StreamingLlmResponse(faqChatMemory.messages(), faqSet);
+    public StreamingLlmResponse generateDocuments(MessageForm form) {
+        return documentStreamingAgent.generate(form);
     }
 
     public StreamingLlmResponse generateData(MessageForm form) {
@@ -79,6 +62,6 @@ public class DemoService {
                 .onError(Throwable::printStackTrace)
                 .start();
 
-        return new StreamingLlmResponse(dataChatMemory.messages(), Collections.emptySet());
+        return new StreamingLlmResponse(dataChatMemory.messages(), Collections.emptyList(), Collections.emptySet());
     }
 }

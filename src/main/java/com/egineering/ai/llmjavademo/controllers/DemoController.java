@@ -1,6 +1,5 @@
 package com.egineering.ai.llmjavademo.controllers;
 
-import com.egineering.ai.llmjavademo.agents.DocumentAgent;
 import com.egineering.ai.llmjavademo.dtos.MessageForm;
 import com.egineering.ai.llmjavademo.dtos.StreamingLlmResponse;
 import com.egineering.ai.llmjavademo.services.DemoService;
@@ -21,11 +20,9 @@ import java.io.InputStream;
 public class DemoController {
 
     private final DemoService service;
-    private final DocumentAgent documentAgent;
 
-    public DemoController(DemoService service, DocumentAgent documentAgent) {
+    public DemoController(DemoService service) {
         this.service = service;
-        this.documentAgent = documentAgent;
     }
 
     @GetMapping("/test")
@@ -60,12 +57,12 @@ public class DemoController {
     @MessageMapping("/documents/llmStreamingRequest")
     @SendTo("/topic/documents/llmResponse")
     public StreamingLlmResponse receiveLlmStreamingRequestDocuments(MessageForm form) {
-        return documentAgent.generate(form);
+        return service.generateDocuments(form);
     }
 
     @MessageMapping("/data/llmStreamingRequest")
     @SendTo("/topic/data/llmResponse")
-    public StreamingLlmResponse postGenerateData(MessageForm form) {
+    public StreamingLlmResponse receiveLlmStreamingRequestData(MessageForm form) {
         return service.generateData(form);
     }
 }

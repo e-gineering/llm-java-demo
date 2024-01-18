@@ -11,6 +11,12 @@ import { IMessage } from "@stomp/rx-stomp";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { ChatMessage } from "../models/ChatMessage";
 import mermaid from 'mermaid';
+import { RouterLink } from "@angular/router";
+import { MatTabsModule } from "@angular/material/tabs";
+import { BasicComponent } from "../basic/basic.component";
+import { FaqComponent } from "../faq/faq.component";
+import { DocumentsComponent } from "../documents/documents.component";
+import { DataComponent } from "../data/data.component";
 
 @Component({
   selector: 'app-main',
@@ -22,7 +28,13 @@ import mermaid from 'mermaid';
     MatInputModule,
     ReactiveFormsModule,
     MatDividerModule,
-    MatExpansionModule
+    MatExpansionModule,
+    RouterLink,
+    MatTabsModule,
+    BasicComponent,
+    FaqComponent,
+    DocumentsComponent,
+    DataComponent
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss'

@@ -1,14 +1,11 @@
 package com.egineering.ai.llmjavademo;
 
-import com.egineering.ai.llmjavademo.agents.BasicAgent;
 import com.egineering.ai.llmjavademo.agents.DataAgent;
-import com.egineering.ai.llmjavademo.agents.FaqAgent;
 import com.egineering.ai.llmjavademo.agents.SqlAgent;
 import com.egineering.ai.llmjavademo.configurations.LiquibaseConfiguration;
 import com.egineering.ai.llmjavademo.configurations.LlmConfiguration;
 import com.egineering.ai.llmjavademo.models.chromadbapi.Collection;
 import com.egineering.ai.llmjavademo.serializers.ChatMessageSerializer;
-import com.egineering.ai.llmjavademo.services.ChromaClient;
 import com.egineering.ai.llmjavademo.services.SqlRetriever;
 import dev.langchain4j.data.document.DocumentSplitter;
 import dev.langchain4j.data.document.loader.FileSystemDocumentLoader;
@@ -20,9 +17,11 @@ import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.Tokenizer;
 import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.chat.StreamingChatLanguageModel;
 import dev.langchain4j.model.embedding.AllMiniLmL6V2EmbeddingModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
-import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
+import dev.langchain4j.model.ollama.OllamaChatModel;
+import dev.langchain4j.model.ollama.OllamaStreamingChatModel;
 import dev.langchain4j.model.openai.OpenAiTokenizer;
 import dev.langchain4j.retriever.EmbeddingStoreRetriever;
 import dev.langchain4j.retriever.Retriever;
@@ -72,45 +71,26 @@ public class LlmJavaDemoApplication {
     }
 
     @Bean
-    public ChromaClient chromaClient() {
-        return new ChromaClient("http://localhost:8000", Duration.of(5, ChronoUnit.SECONDS));
-    }
-
-    @Bean
-    public OpenAiStreamingChatModel streamingChatModel(LlmConfiguration configuration) {
-        return OpenAiStreamingChatModel.withApiKey(configuration.apiKey());
-    }
-
-    @Bean
-    public ChatMemory basicChatMemory() {
-        return MessageWindowChatMemory.withMaxMessages(20);
-    }
-
-    @Bean
-    public BasicAgent basicAgent(OpenAiStreamingChatModel streamingChatModel, ChatMemory basicChatMemory) {
-        return AiServices.builder(BasicAgent.class)
-                .streamingChatLanguageModel(streamingChatModel)
-                .chatMemory(basicChatMemory)
+    public StreamingChatLanguageModel streamingChatModel(LlmConfiguration configuration) {
+        return OllamaStreamingChatModel.builder()
+                .baseUrl("http://localhost:11434")
+                .modelName("llama2")
+                .temperature(0.0)
+                .timeout(Duration.of(1, ChronoUnit.MINUTES))
                 .build();
-    }
-
-    @Bean
-    public ChatMemory faqChatMemory() {
-        return MessageWindowChatMemory.withMaxMessages(20);
-    }
-
-    @Bean
-    public FaqAgent faqAgent(OpenAiStreamingChatModel streamingChatModel, ChatMemory faqChatMemory) {
-        return AiServices.builder(FaqAgent.class)
-                .streamingChatLanguageModel(streamingChatModel)
-                .chatMemory(faqChatMemory)
-                .build();
+//        return OpenAiStreamingChatModel.withApiKey(configuration.apiKey());
     }
 
     @Bean
     public SqlAgent sqlAgent(ChatLanguageModel chatLanguageModel) {
+        ChatLanguageModel model = OllamaChatModel.builder()
+                .baseUrl("http://localhost:11434")
+                .modelName("codelamma")
+                .temperature(0.0)
+                .timeout(Duration.of(1, ChronoUnit.MINUTES))
+                .build();
         return AiServices.builder(SqlAgent.class)
-                .chatLanguageModel(chatLanguageModel)
+                .chatLanguageModel(model)
                 .build();
     }
 
@@ -120,7 +100,7 @@ public class LlmJavaDemoApplication {
     }
 
     @Bean
-    public DataAgent dataAgent(OpenAiStreamingChatModel streamingChatModel, ChatMemory dataChatMemory, SqlRetriever sqlRetriever) {
+    public DataAgent dataAgent(StreamingChatLanguageModel streamingChatModel, ChatMemory dataChatMemory, SqlRetriever sqlRetriever) {
         return AiServices.builder(DataAgent.class)
                 .streamingChatLanguageModel(streamingChatModel)
                 .chatMemory(dataChatMemory)

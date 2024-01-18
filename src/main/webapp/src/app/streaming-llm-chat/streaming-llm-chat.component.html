@@ -1,0 +1,65 @@
+<mat-card class="card">
+    <mat-card-header>
+        <mat-card-title>{{title}}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <form [formGroup]="messageForm" (keyup.enter)="submitMessage()" class="form">
+            <mat-form-field class="full-width">
+                <mat-label>Message</mat-label>
+                <input id="messageBasic" formControlName="message" matInput placeholder="Message...">
+            </mat-form-field>
+        </form>
+        <mat-divider></mat-divider>
+    </mat-card-content>
+    <mat-card-actions class="actions">
+        <button mat-raised-button type="submit" (click)="submitMessage()" color="primary">Submit</button>
+    </mat-card-actions>
+    <mat-card-footer class="card-footer">{{responseStream.response}}</mat-card-footer>
+    <mat-accordion>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Chat History
+                </mat-panel-title>
+                <mat-panel-description>
+                    The chat history window sent to the LLM
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+            <p *ngFor="let message of response.messages"><span>{{message.type}}</span>: <span>{{message.text}}</span></p>
+        </mat-expansion-panel>
+        <mat-expansion-panel *ngIf="response.documents && response.documents.length > 0">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Documents
+                </mat-panel-title>
+                <mat-panel-description>
+                    The documents that were used as sources of information
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+            <p *ngFor="let document of response.documents">{{document}}</p>
+        </mat-expansion-panel>
+        <mat-expansion-panel *ngIf="response.files && response.files.length > 0">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Files
+                </mat-panel-title>
+                <mat-panel-description>
+                    The files that were used as sources of information
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+            <p *ngFor="let file of response.files"><a href="/api/files/{{file}}" target="_blank"
+                                                               style="color: white">{{ file }}</a></p>
+        </mat-expansion-panel>
+        <mat-expansion-panel *ngIf="flowDiagram">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Flow Diagram
+                </mat-panel-title>
+                <mat-panel-description>
+                    The flow of requests and data for this scenario
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div #mermaidDiv></div>
+        </mat-expansion-panel>
+    </mat-accordion>
+</mat-card>

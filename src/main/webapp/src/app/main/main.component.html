@@ -1,157 +1,173 @@
-<mat-card class="card">
-    <mat-card-header>
-        <mat-card-title>Chat GPT</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-        <form [formGroup]="messageForm" (keyup.enter)="submitMessageBasic()" class="form">
-            <mat-form-field class="full-width">
-                <mat-label>Message</mat-label>
-                <input id="messageBasic" formControlName="message" matInput placeholder="Message...">
-            </mat-form-field>
-        </form>
-        <mat-divider></mat-divider>
-    </mat-card-content>
-    <mat-card-actions class="actions">
-        <button mat-raised-button type="submit" (click)="submitMessageBasic()" color="primary">Submit</button>
-    </mat-card-actions>
-    <mat-card-footer class="card-footer">{{responseBasicStreaming.response}}</mat-card-footer>
-    <mat-accordion>
-        <mat-expansion-panel>
-            <mat-expansion-panel-header>
-                <mat-panel-title>
-                    Chat History
-                </mat-panel-title>
-                <mat-panel-description>
-                    The chat history window sent to the LLM
-                </mat-panel-description>
-            </mat-expansion-panel-header>
-            <p *ngFor="let message of responseBasic.messages"><span>{{message.type}}</span>: <span>{{message.text}}</span></p>
-        </mat-expansion-panel>
-        <mat-expansion-panel>
-            <mat-expansion-panel-header>
-                <mat-panel-title>
-                    Flow Diagram
-                </mat-panel-title>
-                <mat-panel-description>
-                    The flow of requests and data for this scenario
-                </mat-panel-description>
-            </mat-expansion-panel-header>
-            <div #mermaidDivBasic></div>
-        </mat-expansion-panel>
-    </mat-accordion>
-</mat-card>
-<mat-card class="card">
-    <mat-card-header>
-        <mat-card-title>Chat GPT With FAQ</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-        <form [formGroup]="messageForm" (keyup.enter)="submitMessageFaq()" class="form">
-            <mat-form-field class="full-width">
-                <mat-label>Message</mat-label>
-                <input id="messageFaq" formControlName="message" matInput placeholder="Message...">
-            </mat-form-field>
-        </form>
-        <mat-divider></mat-divider>
-    </mat-card-content>
-    <mat-card-actions class="actions">
-        <button mat-raised-button type="submit" (click)="submitMessageFaq()" color="primary">Submit</button>
-    </mat-card-actions>
-    <mat-card-footer class="card-footer">{{responseFaqStreaming.response}}</mat-card-footer>
-    <mat-accordion>
-        <mat-expansion-panel>
-            <mat-expansion-panel-header>
-                <mat-panel-title>
-                    Chat History
-                </mat-panel-title>
-                <mat-panel-description>
-                    The chat history window sent to the LLM
-                </mat-panel-description>
-            </mat-expansion-panel-header>
-            <p *ngFor="let message of responseFaq.messages"><span>{{message.type}}</span>: <span>{{message.text}}</span></p>
-        </mat-expansion-panel>
-        <mat-expansion-panel>
-            <mat-expansion-panel-header>
-                <mat-panel-title>
-                    FAQs
-                </mat-panel-title>
-                <mat-panel-description>
-                    The FAQs that were used as sources of information
-                </mat-panel-description>
-            </mat-expansion-panel-header>
-            <p *ngFor="let faq of responseFaq.files">{{faq}}</p>
-        </mat-expansion-panel>
-    </mat-accordion>
-</mat-card>
-<mat-card class="card">
-    <mat-card-header>
-        <mat-card-title>Chat GPT With Documents</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-        <form [formGroup]="messageForm" (keyup.enter)="submitMessageDocuments()" class="form">
-            <mat-form-field class="full-width">
-                <mat-label>Message</mat-label>
-                <input id="messageWs" formControlName="message" matInput placeholder="Message...">
-            </mat-form-field>
-        </form>
-        <mat-divider></mat-divider>
-    </mat-card-content>
-    <mat-card-actions class="actions">
-        <button mat-raised-button type="submit" (click)="submitMessageDocuments()" color="primary">Submit</button>
-    </mat-card-actions>
-    <mat-card-footer class="card-footer">{{responseDocumentsStreaming.response}}</mat-card-footer>
-    <mat-accordion>
-        <mat-expansion-panel>
-            <mat-expansion-panel-header>
-                <mat-panel-title>
-                    Chat History
-                </mat-panel-title>
-                <mat-panel-description>
-                    The chat history window sent to the LLM
-                </mat-panel-description>
-            </mat-expansion-panel-header>
-            <p *ngFor="let message of responseDocuments.messages"><span>{{message.type}}</span>: <span>{{message.text}}</span></p>
-        </mat-expansion-panel>
-        <mat-expansion-panel>
-            <mat-expansion-panel-header>
-                <mat-panel-title>
-                    Documents
-                </mat-panel-title>
-                <mat-panel-description>
-                    The documents that were used as sources of information
-                </mat-panel-description>
-            </mat-expansion-panel-header>
-            <p *ngFor="let file of responseDocuments.files"><a href="/api/files/{{file}}" target="_blank" style="color: white">{{file}}</a></p>
-        </mat-expansion-panel>
-    </mat-accordion>
-</mat-card>
-<mat-card class="card">
-    <mat-card-header>
-        <mat-card-title>Chat GPT With Data</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-        <form [formGroup]="messageForm" (keyup.enter)="submitMessageData()" class="form">
-            <mat-form-field class="full-width">
-                <mat-label>Message</mat-label>
-                <input id="messageData" formControlName="message" matInput placeholder="Message...">
-            </mat-form-field>
-        </form>
-        <mat-divider></mat-divider>
-    </mat-card-content>
-    <mat-card-actions class="actions">
-        <button mat-raised-button type="submit" (click)="submitMessageData()" color="primary">Submit</button>
-    </mat-card-actions>
-    <mat-card-footer class="card-footer">{{responseDataStreaming.response}}</mat-card-footer>
-    <mat-accordion>
-        <mat-expansion-panel>
-            <mat-expansion-panel-header>
-                <mat-panel-title>
-                    Chat History
-                </mat-panel-title>
-                <mat-panel-description>
-                    The chat history window sent to the LLM
-                </mat-panel-description>
-            </mat-expansion-panel-header>
-            <p *ngFor="let message of responseData.messages"><span>{{message.type}}</span>: <span>{{message.text}}</span></p>
-        </mat-expansion-panel>
-    </mat-accordion>
-</mat-card>
+<mat-tab-group mat-stretch-tabs="false" animationDuration="0ms">
+    <mat-tab label="Basic">
+        <app-basic></app-basic>
+    </mat-tab>
+    <mat-tab label="FAQ">
+        <app-faq></app-faq>
+    </mat-tab>
+    <mat-tab label="Documents">
+        <app-documents></app-documents>
+    </mat-tab>
+    <mat-tab label="Data">
+        <app-data></app-data>
+    </mat-tab>
+</mat-tab-group>
+
+
+<!--<mat-card class="card">-->
+<!--    <mat-card-header>-->
+<!--        <mat-card-title>Chat GPT</mat-card-title>-->
+<!--    </mat-card-header>-->
+<!--    <mat-card-content>-->
+<!--        <form [formGroup]="messageForm" (keyup.enter)="submitMessageBasic()" class="form">-->
+<!--            <mat-form-field class="full-width">-->
+<!--                <mat-label>Message</mat-label>-->
+<!--                <input id="messageBasic" formControlName="message" matInput placeholder="Message...">-->
+<!--            </mat-form-field>-->
+<!--        </form>-->
+<!--        <mat-divider></mat-divider>-->
+<!--    </mat-card-content>-->
+<!--    <mat-card-actions class="actions">-->
+<!--        <button mat-raised-button type="submit" (click)="submitMessageBasic()" color="primary">Submit</button>-->
+<!--    </mat-card-actions>-->
+<!--    <mat-card-footer class="card-footer">{{responseBasicStreaming.response}}</mat-card-footer>-->
+<!--    <mat-accordion>-->
+<!--        <mat-expansion-panel>-->
+<!--            <mat-expansion-panel-header>-->
+<!--                <mat-panel-title>-->
+<!--                    Chat History-->
+<!--                </mat-panel-title>-->
+<!--                <mat-panel-description>-->
+<!--                    The chat history window sent to the LLM-->
+<!--                </mat-panel-description>-->
+<!--            </mat-expansion-panel-header>-->
+<!--            <p *ngFor="let message of responseBasic.messages"><span>{{message.type}}</span>: <span>{{message.text}}</span></p>-->
+<!--        </mat-expansion-panel>-->
+<!--        <mat-expansion-panel>-->
+<!--            <mat-expansion-panel-header>-->
+<!--                <mat-panel-title>-->
+<!--                    Flow Diagram-->
+<!--                </mat-panel-title>-->
+<!--                <mat-panel-description>-->
+<!--                    The flow of requests and data for this scenario-->
+<!--                </mat-panel-description>-->
+<!--            </mat-expansion-panel-header>-->
+<!--            <div #mermaidDivBasic></div>-->
+<!--        </mat-expansion-panel>-->
+<!--    </mat-accordion>-->
+<!--</mat-card>-->
+<!--<mat-card class="card">-->
+<!--    <mat-card-header>-->
+<!--        <mat-card-title>Chat GPT With FAQ</mat-card-title>-->
+<!--    </mat-card-header>-->
+<!--    <mat-card-content>-->
+<!--        <form [formGroup]="messageForm" (keyup.enter)="submitMessageFaq()" class="form">-->
+<!--            <mat-form-field class="full-width">-->
+<!--                <mat-label>Message</mat-label>-->
+<!--                <input id="messageFaq" formControlName="message" matInput placeholder="Message...">-->
+<!--            </mat-form-field>-->
+<!--        </form>-->
+<!--        <mat-divider></mat-divider>-->
+<!--    </mat-card-content>-->
+<!--    <mat-card-actions class="actions">-->
+<!--        <button mat-raised-button type="submit" (click)="submitMessageFaq()" color="primary">Submit</button>-->
+<!--    </mat-card-actions>-->
+<!--    <mat-card-footer class="card-footer">{{responseFaqStreaming.response}}</mat-card-footer>-->
+<!--    <mat-accordion>-->
+<!--        <mat-expansion-panel>-->
+<!--            <mat-expansion-panel-header>-->
+<!--                <mat-panel-title>-->
+<!--                    Chat History-->
+<!--                </mat-panel-title>-->
+<!--                <mat-panel-description>-->
+<!--                    The chat history window sent to the LLM-->
+<!--                </mat-panel-description>-->
+<!--            </mat-expansion-panel-header>-->
+<!--            <p *ngFor="let message of responseFaq.messages"><span>{{message.type}}</span>: <span>{{message.text}}</span></p>-->
+<!--        </mat-expansion-panel>-->
+<!--        <mat-expansion-panel>-->
+<!--            <mat-expansion-panel-header>-->
+<!--                <mat-panel-title>-->
+<!--                    FAQs-->
+<!--                </mat-panel-title>-->
+<!--                <mat-panel-description>-->
+<!--                    The FAQs that were used as sources of information-->
+<!--                </mat-panel-description>-->
+<!--            </mat-expansion-panel-header>-->
+<!--            <p *ngFor="let faq of responseFaq.files">{{faq}}</p>-->
+<!--        </mat-expansion-panel>-->
+<!--    </mat-accordion>-->
+<!--</mat-card>-->
+<!--<mat-card class="card">-->
+<!--    <mat-card-header>-->
+<!--        <mat-card-title>Chat GPT With Documents</mat-card-title>-->
+<!--    </mat-card-header>-->
+<!--    <mat-card-content>-->
+<!--        <form [formGroup]="messageForm" (keyup.enter)="submitMessageDocuments()" class="form">-->
+<!--            <mat-form-field class="full-width">-->
+<!--                <mat-label>Message</mat-label>-->
+<!--                <input id="messageWs" formControlName="message" matInput placeholder="Message...">-->
+<!--            </mat-form-field>-->
+<!--        </form>-->
+<!--        <mat-divider></mat-divider>-->
+<!--    </mat-card-content>-->
+<!--    <mat-card-actions class="actions">-->
+<!--        <button mat-raised-button type="submit" (click)="submitMessageDocuments()" color="primary">Submit</button>-->
+<!--    </mat-card-actions>-->
+<!--    <mat-card-footer class="card-footer">{{responseDocumentsStreaming.response}}</mat-card-footer>-->
+<!--    <mat-accordion>-->
+<!--        <mat-expansion-panel>-->
+<!--            <mat-expansion-panel-header>-->
+<!--                <mat-panel-title>-->
+<!--                    Chat History-->
+<!--                </mat-panel-title>-->
+<!--                <mat-panel-description>-->
+<!--                    The chat history window sent to the LLM-->
+<!--                </mat-panel-description>-->
+<!--            </mat-expansion-panel-header>-->
+<!--            <p *ngFor="let message of responseDocuments.messages"><span>{{message.type}}</span>: <span>{{message.text}}</span></p>-->
+<!--        </mat-expansion-panel>-->
+<!--        <mat-expansion-panel>-->
+<!--            <mat-expansion-panel-header>-->
+<!--                <mat-panel-title>-->
+<!--                    Documents-->
+<!--                </mat-panel-title>-->
+<!--                <mat-panel-description>-->
+<!--                    The documents that were used as sources of information-->
+<!--                </mat-panel-description>-->
+<!--            </mat-expansion-panel-header>-->
+<!--            <p *ngFor="let file of responseDocuments.files"><a href="/api/files/{{file}}" target="_blank" style="color: white">{{file}}</a></p>-->
+<!--        </mat-expansion-panel>-->
+<!--    </mat-accordion>-->
+<!--</mat-card>-->
+<!--<mat-card class="card">-->
+<!--    <mat-card-header>-->
+<!--        <mat-card-title>Chat GPT With Data</mat-card-title>-->
+<!--    </mat-card-header>-->
+<!--    <mat-card-content>-->
+<!--        <form [formGroup]="messageForm" (keyup.enter)="submitMessageData()" class="form">-->
+<!--            <mat-form-field class="full-width">-->
+<!--                <mat-label>Message</mat-label>-->
+<!--                <input id="messageData" formControlName="message" matInput placeholder="Message...">-->
+<!--            </mat-form-field>-->
+<!--        </form>-->
+<!--        <mat-divider></mat-divider>-->
+<!--    </mat-card-content>-->
+<!--    <mat-card-actions class="actions">-->
+<!--        <button mat-raised-button type="submit" (click)="submitMessageData()" color="primary">Submit</button>-->
+<!--    </mat-card-actions>-->
+<!--    <mat-card-footer class="card-footer">{{responseDataStreaming.response}}</mat-card-footer>-->
+<!--    <mat-accordion>-->
+<!--        <mat-expansion-panel>-->
+<!--            <mat-expansion-panel-header>-->
+<!--                <mat-panel-title>-->
+<!--                    Chat History-->
+<!--                </mat-panel-title>-->
+<!--                <mat-panel-description>-->
+<!--                    The chat history window sent to the LLM-->
+<!--                </mat-panel-description>-->
+<!--            </mat-expansion-panel-header>-->
+<!--            <p *ngFor="let message of responseData.messages"><span>{{message.type}}</span>: <span>{{message.text}}</span></p>-->
+<!--        </mat-expansion-panel>-->
+<!--    </mat-accordion>-->
+<!--</mat-card>-->

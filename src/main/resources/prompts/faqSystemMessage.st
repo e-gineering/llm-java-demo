@@ -3,4 +3,4 @@ Use the information contained in the frequently asked questions in the FAQs sect
 If unsure, simply state that you don't know.
 
 FAQs:
-{faqs}
+{{documents}}
