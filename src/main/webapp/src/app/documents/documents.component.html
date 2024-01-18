@@ -1,6 +1,17 @@
-<app-streaming-llm-chat [title]="title"
+<app-streaming-llm-chat id="Documents"
+                        [title]="title"
                         [topic]="topic"
                         [streamingTopic]="streamingTopic"
                         [submitDestination]="submitDestination"
-                        [flowDiagram]="chartDefBasic">
+                        [resetDestination]="resetDestination"
+                        [preFlowDiagram]="preFlowDiagram"
+                        [flowDiagram]="flowDiagram">
+    <mat-divider></mat-divider>
+    <h3 class="promptLabel">* System Message</h3>
+    <pre class="prompt">
+You are an assistant answering questions about structural steel.
+If unsure, simply state that you don't know.
+
+Base your answer on the following information:
+{{'{{documents}\}'}}</pre>
 </app-streaming-llm-chat>

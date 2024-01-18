@@ -11,7 +11,7 @@ public interface SqlAgent {
             Wrap each column name in double quotes (") to denote them as delimited identifiers.
             Pay attention to use date('now') function to get the current date, if the question involves "today".
             If the desired results are numeric, order by the desired result.
-            Do not return any primary key columns.
+            Do not return any primary key columns. Do not return the id columns.
             Return the SQL query ONLY. Do not include any additional explanation.
             
             You only have read only access to the tables below. Never query for all columns from a table.
@@ -19,9 +19,6 @@ public interface SqlAgent {
 
             Only use the following tables:
 
-            {{tableSql}}
-            
-            Question: %s
-            SQLQuery:""")
+            {{tableSql}}""")
     String generate(@V(value = "tableSql") String tableSql, @UserMessage String userMessage);
 }

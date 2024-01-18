@@ -97,7 +97,7 @@ public class DocumentStreamingAgent {
         StreamingResponseHandler<AiMessage> handler = new StreamingResponseHandler<>() {
             @Override
             public void onNext(String token) {
-                messagingTemplate.convertAndSend("/topic/llmStreamingResponse", new LlmResponse(token));
+                messagingTemplate.convertAndSend("/topic/documents/llmStreamingResponse", new LlmResponse(token));
             }
 
             @Override
@@ -119,6 +119,10 @@ public class DocumentStreamingAgent {
                 .collect(Collectors.toSet());
 
         return new StreamingLlmResponse(chatMemory.messages(), documents, files);
+    }
+
+    public void reset() {
+        chatMemory.clear();
     }
 
     private static List<EmbeddingMatch<TextSegment>> toEmbeddingMatches(QueryResponse queryResponse) {

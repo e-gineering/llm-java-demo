@@ -48,10 +48,20 @@ public class DemoController {
         return service.generateBasic(form);
     }
 
+    @MessageMapping("/basic/reset")
+    public void receiveResetBasic(boolean doReset) {
+        service.resetBasic(doReset);
+    }
+
     @MessageMapping("/faq/llmStreamingRequest")
     @SendTo("/topic/faq/llmResponse")
     public StreamingLlmResponse receiveLlmStreamingRequestFaq(MessageForm form) {
         return service.generateFaq(form);
+    }
+
+    @MessageMapping("/faq/reset")
+    public void receiveResetFaq(boolean doReset) {
+        service.resetFaq(doReset);
     }
 
     @MessageMapping("/documents/llmStreamingRequest")
@@ -60,9 +70,19 @@ public class DemoController {
         return service.generateDocuments(form);
     }
 
+    @MessageMapping("/documents/reset")
+    public void receiveResetDocuments(boolean doReset) {
+        service.resetDocuments(doReset);
+    }
+
     @MessageMapping("/data/llmStreamingRequest")
     @SendTo("/topic/data/llmResponse")
     public StreamingLlmResponse receiveLlmStreamingRequestData(MessageForm form) {
         return service.generateData(form);
+    }
+
+    @MessageMapping("/data/reset")
+    public void receiveResetData(boolean doReset) {
+        service.resetData(doReset);
     }
 }

@@ -92,4 +92,8 @@ public abstract class AbstractStreamingAgent {
     public StreamingLlmResponse generate(MessageForm form) {
         return generate(form, Collections.emptyList(), Collections.emptySet());
     }
+
+    public void reset() {
+        chatMemory.clear();
+    }
 }

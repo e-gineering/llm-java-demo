@@ -6,17 +6,19 @@
         <form [formGroup]="messageForm" (keyup.enter)="submitMessage()" class="form">
             <mat-form-field class="full-width">
                 <mat-label>Message</mat-label>
-                <input id="messageBasic" formControlName="message" matInput placeholder="Message...">
+                <input #message [id]="'message' + id" formControlName="message" matInput placeholder="Message..." autofocus>
             </mat-form-field>
         </form>
         <mat-divider></mat-divider>
     </mat-card-content>
     <mat-card-actions class="actions">
-        <button mat-raised-button type="submit" (click)="submitMessage()" color="primary">Submit</button>
+        <button mat-raised-button type="submit" [disabled]="loaderService.getLoading()" (click)="submitMessage()" color="primary">Submit</button>
+        <button mat-raised-button type="reset" (click)="resetMemory()" style="margin-left: 12px">Reset Chat Context</button>
     </mat-card-actions>
     <mat-card-footer class="card-footer">{{responseStream.response}}</mat-card-footer>
+    <mat-divider></mat-divider>
     <mat-accordion>
-        <mat-expansion-panel>
+        <mat-expansion-panel *ngIf="response.messages && response.messages.length > 0">
             <mat-expansion-panel-header>
                 <mat-panel-title>
                     Chat History
@@ -50,7 +52,7 @@
             <p *ngFor="let file of response.files"><a href="/api/files/{{file}}" target="_blank"
                                                                style="color: white">{{ file }}</a></p>
         </mat-expansion-panel>
-        <mat-expansion-panel *ngIf="flowDiagram">
+        <mat-expansion-panel expanded="true">
             <mat-expansion-panel-header>
                 <mat-panel-title>
                     Flow Diagram
@@ -59,7 +61,10 @@
                     The flow of requests and data for this scenario
                 </mat-panel-description>
             </mat-expansion-panel-header>
-            <div #mermaidDiv></div>
+            <div #preMermaidDiv class="center"></div>
+            <mat-divider *ngIf="preFlowDiagram"></mat-divider>
+            <div #mermaidDiv class="center"></div>
+            <ng-content></ng-content>
         </mat-expansion-panel>
     </mat-accordion>
 </mat-card>
