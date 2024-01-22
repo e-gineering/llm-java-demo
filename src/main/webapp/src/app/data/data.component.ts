@@ -14,7 +14,7 @@ import { MatDividerModule } from "@angular/material/divider";
 })
 export class DataComponent {
 
-  title="Chat GPT With Data"
+  title="ChatGPT With Data"
   topic="/topic/data/llmResponse"
   streamingTopic="/topic/data/llmStreamingResponse"
   submitDestination="/app/data/llmStreamingRequest"
@@ -27,7 +27,7 @@ export class DataComponent {
     head~~~in-->cl-->data`
   flowDiagram = `sequenceDiagram
     actor User
-    User ->> Demo UI: User Message
+    User ->> Demo UI: Message
     box Grey E-gineering Code
     participant Demo UI
     participant Demo App
@@ -40,7 +40,7 @@ export class DataComponent {
     ChatGPT ->>- Demo App: Generated query (SELECT * FROM...)
     Demo App ->>+ Demo Database: Query with generated query
     Demo Database ->>- Demo App: Query results
-    Demo App ->> Demo App: Build system message with query results
+    Demo App ->> Demo App: Build system message with query results<br />(contextual information)
     Demo App ->>+ ChatGPT: Streaming API call<br />[system message**]<br />[user message]
     end
     ChatGPT ->> Demo App: Streaming response

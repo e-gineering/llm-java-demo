@@ -14,7 +14,7 @@ import { MatDividerModule } from "@angular/material/divider";
 })
 export class DocumentsComponent {
 
-  title= "Chat GPT With Documents"
+  title= "ChatGPT With Documents"
   topic= "/topic/documents/llmResponse"
   streamingTopic= "/topic/documents/llmStreamingResponse"
   submitDestination= "/app/documents/llmStreamingRequest"
@@ -28,7 +28,7 @@ export class DocumentsComponent {
     head~~~docs-->in-->emb-->data`
   flowDiagram = `sequenceDiagram
     actor User
-    User ->> Demo UI: User Message
+    User ->> Demo UI: Message
     box Grey E-gineering Code
     participant Demo UI
     participant Demo App
@@ -38,15 +38,15 @@ export class DocumentsComponent {
     rect rgb(123,31,162)
     Note over Demo Vector Store: New component
     Demo App ->>+ Demo Vector Store: Query with user message
-    Demo Vector Store ->>- Demo App: Relevant text embeddings (information)
+    Demo Vector Store ->>- Demo App: Relevant text embeddings<br />(contextual information)
     Demo App ->> Demo App: Build system message with relevant information
-    Demo App ->>+ Chat GPT: Streaming API call<br />[system message*]<br />[user message]
+    Demo App ->>+ ChatGPT: Streaming API call<br />[system message*]<br />[user message]
     end
-    Chat GPT ->> Demo App: Streaming response
+    ChatGPT ->> Demo App: Streaming response
         loop Stream
         Demo App -) Demo App: Receive Tokens
     end
-    Chat GPT -)- Demo App: Token stream
+    ChatGPT -)- Demo App: Token stream
     Demo App -)- Demo UI: Token stream
     Demo UI ->> User: Response`
 }

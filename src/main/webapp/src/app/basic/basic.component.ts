@@ -11,25 +11,25 @@ import { StreamingLlmChatComponent } from "../streaming-llm-chat/streaming-llm-c
   styleUrl: './basic.component.scss'
 })
 export class BasicComponent {
-  title="Chat GPT"
+  title="ChatGPT"
   topic="/topic/basic/llmResponse"
   streamingTopic="/topic/basic/llmStreamingResponse"
   submitDestination="/app/basic/llmStreamingRequest"
   resetDestination="/app/basic/reset"
   flowDiagram = `sequenceDiagram
     actor User
-    User ->> Demo UI: User Message
+    User ->> Demo UI: Message
     box Grey E-gineering Code
     participant Demo UI
     participant Demo App
     end
     Demo UI ->>+ Demo App: User message
-    Demo App ->>+ Chat GPT: Streaming API call<br />[user message]
-    Chat GPT ->> Demo App: Streaming response
+    Demo App ->>+ ChatGPT: Streaming API call<br />[user message]
+    ChatGPT ->> Demo App: Streaming response
         loop Stream
         Demo App -) Demo App: Receive Tokens
     end
-    Chat GPT -)- Demo App: Token stream
+    ChatGPT -)- Demo App: Token stream
     Demo App -)- Demo UI: Token stream
     Demo UI ->> User: Response`
 }

@@ -14,14 +14,14 @@ import { MatDividerModule } from "@angular/material/divider";
 })
 export class FaqComponent {
 
-  title="Chat GPT With FAQ"
+  title="ChatGPT With FAQ"
   topic="/topic/faq/llmResponse"
   streamingTopic="/topic/faq/llmStreamingResponse"
   submitDestination="/app/faq/llmStreamingRequest"
   resetDestination="/app/faq/reset"
   flowDiagram = `sequenceDiagram
     actor User
-    User ->> Demo UI: User Message
+    User ->> Demo UI: Message
     box Grey E-gineering Code
     participant Demo UI
     participant Demo App
@@ -30,12 +30,12 @@ export class FaqComponent {
     rect rgb(123,31,162)
     Demo App ->> Demo App: Build system message* with FAQs
     end
-    Demo App ->>+ Chat GPT: Streaming API call<br />[system message*]<br />[user message]
-    Chat GPT ->> Demo App: Streaming response
+    Demo App ->>+ ChatGPT: Streaming API call<br />[system message*]<br />[user message]
+    ChatGPT ->> Demo App: Streaming response
         loop Stream
         Demo App -) Demo App: Receive Tokens
     end
-    Chat GPT -)- Demo App: Token stream
+    ChatGPT -)- Demo App: Token stream
     Demo App -)- Demo UI: Token stream
     Demo UI ->> User: Response`
 }

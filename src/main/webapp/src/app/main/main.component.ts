@@ -47,12 +47,12 @@ export class MainComponent implements OnInit {
   //   participant Demo App
   //   end
   //   Demo UI ->>+ Demo App: User message
-  //   Demo App ->>+ Chat GPT: Streaming API call
-  //   Chat GPT ->> Demo App: Streaming response
+  //   Demo App ->>+ ChatGPT: Streaming API call
+  //   ChatGPT ->> Demo App: Streaming response
   //       loop Stream
   //       Demo App -) Demo App: Receive Tokens
   //   end
-  //   Chat GPT -)- Demo App: Token stream
+  //   ChatGPT -)- Demo App: Token stream
   //   Demo App -)- Demo UI: Token stream`
   //
   // messageForm = new FormGroup({
